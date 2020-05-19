@@ -19,10 +19,6 @@ if (require.main === module) {
   rmdirRecursive('./dist');
   mkdirRecursive('./dist');
 
-  copyFile('./LICENSE', './dist/LICENSE');
-  copyFile('./README.md', './dist/README.md');
-  copyFile('./types/index.d.ts', './dist/index.d.ts');
-
   const srcFiles = readdirRecursive('./src', { ignoreDir: /^__.*__$/ });
   for (const filepath of srcFiles) {
     if (filepath.endsWith('.js')) {
@@ -30,8 +26,6 @@ if (require.main === module) {
     }
   }
 
-  const packageJSON = buildPackageJSON();
-  writeFile('./dist/package.json', JSON.stringify(packageJSON, null, 2));
   showStats();
 }
 
