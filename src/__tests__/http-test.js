@@ -1182,7 +1182,7 @@ function urlString(urlParams?: ?{ [param: string]: mixed, ... }) {
           }),
         );
 
-        expect(response.status).to.equal(500);
+        expect(response.status).to.equal(200);
         expect(JSON.parse(response.text)).to.deep.equal({
           data: null,
           errors: [
