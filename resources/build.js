@@ -4,7 +4,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const assert = require('assert');
 const babel = require('@babel/core');
 const {
   copyFile,
@@ -12,7 +11,6 @@ const {
   rmdirRecursive,
   mkdirRecursive,
   readdirRecursive,
-  parseSemver,
 } = require('./utils');
 
 if (require.main === module) {
@@ -85,22 +83,4 @@ function buildJSFile(filepath) {
 
   copyFile(srcPath, destPath + '.flow');
   writeFile(destPath, babelBuild(srcPath, 'cjs'));
-}
-
-function buildPackageJSON() {
-  const packageJSON = require('../package.json');
-  delete packageJSON.private;
-  delete packageJSON.scripts;
-  delete packageJSON.devDependencies;
-
-  const { preReleaseTag } = parseSemver(packageJSON.version);
-  if (preReleaseTag != null) {
-    const [tag] = preReleaseTag.split('.');
-    assert(tag === 'rc', 'Only "rc" tag is supported.');
-
-    assert(!packageJSON.publishConfig, 'Can not override "publishConfig".');
-    packageJSON.publishConfig = { tag: tag || 'latest' };
-  }
-
-  return packageJSON;
 }
