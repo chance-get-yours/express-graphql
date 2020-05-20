@@ -4,7 +4,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const assert = require('assert');
 const babel = require('@babel/core');
 const {
   copyFile,
@@ -12,16 +11,11 @@ const {
   rmdirRecursive,
   mkdirRecursive,
   readdirRecursive,
-  parseSemver,
 } = require('./utils');
 
 if (require.main === module) {
   rmdirRecursive('./dist');
   mkdirRecursive('./dist');
-
-  copyFile('./LICENSE', './dist/LICENSE');
-  copyFile('./README.md', './dist/README.md');
-  copyFile('./types/index.d.ts', './dist/index.d.ts');
 
   const srcFiles = readdirRecursive('./src', { ignoreDir: /^__.*__$/ });
   for (const filepath of srcFiles) {
@@ -30,8 +24,6 @@ if (require.main === module) {
     }
   }
 
-  const packageJSON = buildPackageJSON();
-  writeFile('./dist/package.json', JSON.stringify(packageJSON, null, 2));
   showStats();
 }
 
@@ -91,22 +83,4 @@ function buildJSFile(filepath) {
 
   copyFile(srcPath, destPath + '.flow');
   writeFile(destPath, babelBuild(srcPath, 'cjs'));
-}
-
-function buildPackageJSON() {
-  const packageJSON = require('../package.json');
-  delete packageJSON.private;
-  delete packageJSON.scripts;
-  delete packageJSON.devDependencies;
-
-  const { preReleaseTag } = parseSemver(packageJSON.version);
-  if (preReleaseTag != null) {
-    const [tag] = preReleaseTag.split('.');
-    assert(tag === 'rc', 'Only "rc" tag is supported.');
-
-    assert(!packageJSON.publishConfig, 'Can not override "publishConfig".');
-    packageJSON.publishConfig = { tag: tag || 'latest' };
-  }
-
-  return packageJSON;
 }
